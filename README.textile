@@ -1,0 +1,3 @@
+h1. Monocles Provisioner
+
+h2. Installs the Monocles social network couchapp onto any CouchDB
