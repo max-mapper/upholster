@@ -13,7 +13,8 @@ a {
     text-decoration: underline; }
 
 p {
-  word-wrap: break-word; }
+  word-wrap: break-word;
+  margin: 10px 0px 0px 0px; }
 
 h1, h2, h3, h4, h5 {
   color: #444444;
@@ -1811,6 +1812,12 @@ ul.show_comments {
     margin-right: 4px;
     top: 5px; }
 
+.instructions {
+  width: 420px;
+  font-size: 14px;
+  margin: 10px auto;
+}
+
 #login {
   width: 600px;
   padding-top: 10%;
@@ -1831,6 +1838,14 @@ ul.show_comments {
     box-shadow: 0 1px 0px white, 0 -1px 0px #888888;
     width: 180px;
     max-width: 180px; }
+  #login form #user_url {
+    width: 383px;
+    max-width: 383px;
+  }
+  #login .url_container {
+    width: 403px;
+    right: 1px;
+  }
   #login form p {
     display: inline-block;
     position: relative;
@@ -1839,9 +1854,9 @@ ul.show_comments {
       margin-left: 3px; }
       #login form p span.pod_location {
         color: #888888; }
-    #login form p.submit {
-      width: auto;
-      bottom: 17px; }
+      #login form p.submit {
+        top: 8px;
+      }
       #login form p.submit a {
         width: auto;
         position: relative;
