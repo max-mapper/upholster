@@ -45,8 +45,26 @@ app.get("/", function(req, res) {
 });
 
 app.post("/provision", function(req, res) {
-  console.log(sys.inspect(req.body))
-  res.send(req.body.username);
+  var required_params = ['username', 'password', 'url'];
+  var ok = true;
+  for (var i=0; i < required_params.length; i++) {
+    if(req.body[required_params[i]] === "") {
+      res.send("Missing parameters. Please fill out the entire form");
+      ok = false;
+    }
+  }
+  if (ok) {
+    var couch = "http://" + req.body.username + ":" + req.body.password + "@" + req.body.url;
+    var headers = {'content-type':'application/json', 'accept':'application/json'};
+    var replication = {"source":"couchappspora","target":couch, "doc_ids":["_design/couchappspora"]};
+    request({method: "POST", uri:couch + '/_replicate', body: JSON.stringify(replication), headers:headers}, 
+      function (err, resp, body) {
+        if (err) throw err;
+        var msg = JSON.parse(body);
+        res.send(msg);
+      }
+    )
+  }
   // var monocles = "http://glitterbacon.couchone.com/couchappspora/_design/couchappspora"
   // curl -X POST http://YOURCOUCH/_replicate -d '{"source":"http://max.couchone.com/apps","target":"apps", "doc_ids":["_design/push"]}'
 });
