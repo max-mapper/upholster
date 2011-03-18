@@ -24,6 +24,48 @@ var mustacheWrapper = {
   }
 };
 
+var headers = {'content-type':'application/json', 'accept':'application/json'};
+
+function parseResponse(err, resp, body) {
+  if (err) {
+    msg = {"error" : "http_error", "reason": err.message}
+  } else if (body) {
+    msg = JSON.parse(body);
+  } else if (resp) {
+    msg = JSON.parse(resp);
+  }
+  return msg;
+}
+
+function createDb(db, couch, callback) {
+  request({method: "GET", uri:couch + "/" + db, headers:headers}, function(err, resp, body) {
+    var msg = parseResponse(err, resp, body);
+    if (msg.error && msg.reason === "no_db_file") {
+      request({method: "PUT", uri:couch + "/" + db, headers:headers}, function(err, resp, body) {
+         msg = parseResponse(err, resp, body);
+         callback(msg);
+       });
+    } else {
+      callback(msg);
+    }
+  });
+}
+
+function replicateMonocles(couch, target, callback) {
+  var replication = {"source":"couchappspora","target":couch + "/" + target, "doc_ids":["_design/couchappspora"]};
+  request({method: "POST", uri:couch + '/_replicate', body: JSON.stringify(replication), headers:headers}, callback)
+}
+
+function ensureParams(params, req) {
+  var missing = false;
+  params.forEach(function(param) {
+    if ( req.body[param] === "" ) {
+      missing = {"error" : "missing_params", "reason": "Missing parameters. Please fill out the entire form"};
+    }
+  })
+  return missing;
+}
+
 var app = express.createServer();
 
 app.configure(function() {
@@ -45,23 +87,23 @@ app.get("/", function(req, res) {
 });
 
 app.post("/provision", function(req, res) {
-  var required_params = ['username', 'password', 'url'];
-  var ok = true;
-  for (var i=0; i < required_params.length; i++) {
-    if(req.body[required_params[i]] === "") {
-      res.send("Missing parameters. Please fill out the entire form");
-      ok = false;
-    }
-  }
-  if (ok) {
+  var missing = ensureParams(['username', 'password', 'url'], req);
+  if (missing) {
+    res.send(missing);
+  } else {
     var couch = "http://" + req.body.username + ":" + req.body.password + "@" + req.body.url;
-    var headers = {'content-type':'application/json', 'accept':'application/json'};
-    var replication = {"source":"couchappspora","target":couch, "doc_ids":["_design/couchappspora"]};
-    request({method: "POST", uri:couch + '/_replicate', body: JSON.stringify(replication), headers:headers}, 
-      function (err, resp, body) {
-        if (err) throw err;
-        var msg = JSON.parse(body);
-        res.send(msg);
+    var target = "monocles";
+    createDb(target, couch, 
+      function (msg) {
+        if (msg.error) {
+          res.send(msg);
+        } else if (msg.db_name || msg.ok) {
+          replicateMonocles(couch, target, 
+            function (err, resp, body) {
+              res.send(parseResponse(err, resp, body));
+            }
+          )
+        }
       }
     )
   }

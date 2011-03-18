@@ -19,11 +19,11 @@ $(function(){
         if (response.doc_write_failures > 0) {
           msg = "Invalid username or password"
         } else {
-          msg = "Monocles installed successfully"
+          msg = 'Monocles installed successfully! View it <a href="http://' + data.url + '/monocles/_design/couchappspora/_rewrite' + '">here</a>'
         }
       }
       $('.button').html(resting);
-      $('#notification').append(msg);
+      $('#notification').html(msg);
     })
   }
   
