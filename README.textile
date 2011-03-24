@@ -1,3 +1,7 @@
-h1. Monocles Provisioner
+h1. Upholster - A Couchapp Provisioner
 
-h2. Installs the Monocles social network couchapp onto any CouchDB
+Work in progress! Don't use unless you are curious
+
+Currently configured to install the Monocles social network couchapp onto any CouchDB
+
+In the future I will turn this into a generic couchapp installer utility
