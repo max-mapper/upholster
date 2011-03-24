@@ -52,7 +52,7 @@ function createDb(db, couch, callback) {
 }
 
 function replicateMonocles(couch, target, callback) {
-  var replication = {"source":"couchappspora","target":couch + "/" + target, "doc_ids":["_design/couchappspora"]};
+  var replication = {"source":"http://glitterbacon.couchone.com/couchappspora","target":couch + "/" + target, "doc_ids":["_design/couchappspora"]};
   request({method: "POST", uri:couch + '/_replicate', body: JSON.stringify(replication), headers:headers}, callback)
 }
 
@@ -60,7 +60,7 @@ function ensureParams(params, req) {
   var missing = false;
   params.forEach(function(param) {
     if ( req.body[param] === "" ) {
-      missing = {"error" : "missing_params", "reason": "Missing parameters. Please fill out the entire form"};
+      missing = {"error" : "missing_params", "reason": "Missing parameters. Please fill out the required fields"};
     }
   })
   return missing;
@@ -101,14 +101,13 @@ app.post("/provision", function(req, res) {
           replicateMonocles(couch, target, 
             function (err, resp, body) {
               res.send(parseResponse(err, resp, body));
+              // TODO PUT http://admin:password@couch:5984/_config/vhosts/domainname -d '"/monocles/_design/couchappspora/_rewrite"'
             }
           )
         }
       }
     )
   }
-  // var monocles = "http://glitterbacon.couchone.com/couchappspora/_design/couchappspora"
-  // curl -X POST http://YOURCOUCH/_replicate -d '{"source":"http://max.couchone.com/apps","target":"apps", "doc_ids":["_design/push"]}'
 });
 
 var port = 3000;

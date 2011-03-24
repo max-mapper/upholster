@@ -129,9 +129,12 @@ footer {
     -webkit-box-shadow: 0 1px 0px white, 0 -1px 0px #888888;
     -moz-box-shadow: 0 1px 0px white, 0 -1px 0px #888888;
     box-shadow: 0 1px 0px white, 0 -1px 0px #888888;
+  }
+  #login form .short {
     width: 180px;
-    max-width: 180px; }
-  #login form #url {
+    max-width: 180px;
+  }
+  #login form .long {
     width: 383px;
     max-width: 383px;
   }
